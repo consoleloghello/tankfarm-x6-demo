@@ -1,0 +1,54 @@
+{
+  "name": "tankfarm-x6-demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "化工罐区工艺流程交互图 Demo（AntV X6）：可交互、可编辑、数据驱动，用于倒罐操作演示与新员工培训",
+  "license": "MIT",
+  "keywords": [
+    "antv-x6",
+    "x6",
+    "diagram",
+    "editor",
+    "p-id",
+    "piping-and-instrumentation-diagram",
+    "process-flow-diagram",
+    "chemical-engineering",
+    "tank-farm",
+    "scada",
+    "typescript",
+    "vite"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/consoleloghello/tankfarm-x6-demo.git"
+  },
+  "homepage": "https://github.com/consoleloghello/tankfarm-x6-demo#readme",
+  "bugs": {
+    "url": "https://github.com/consoleloghello/tankfarm-x6-demo/issues"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/test-interactions.mjs",
+    "shot": "node scripts/shot.mjs"
+  },
+  "dependencies": {
+    "@antv/x6": "2.19.2",
+    "@antv/x6-plugin-export": "2.1.6",
+    "@antv/x6-plugin-history": "2.2.4",
+    "@antv/x6-plugin-keyboard": "2.2.3",
+    "@antv/x6-plugin-selection": "2.2.2",
+    "@antv/x6-plugin-snapline": "2.1.7"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

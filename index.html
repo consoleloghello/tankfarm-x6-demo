@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="化工罐区工艺流程交互图 Demo（AntV X6）：可交互、可编辑、数据驱动的 P&ID / 工艺流程图编辑器示例，支持阀门开关联动、流动动画、倒罐操作规程分步演示与画布→业务数据导出。"
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <title>化工罐区工艺流程交互编辑器</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d6fe0'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white'%3E%E7%BD%90%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">罐区</span>
+          <span class="brand-text">工艺流程交互图 Demo</span>
+          <span class="brand-sub">AntV X6 · 可交互 / 可编辑 / 数据驱动</span>
+        </div>
+
+        <div class="toolbar" id="toolbar">
+          <div class="tb-group" data-role="mode">
+            <button class="btn" data-mode="view">查看模式</button>
+            <button class="btn" data-mode="edit">编辑模式</button>
+          </div>
+          <div class="tb-group">
+            <button class="btn" id="btn-undo" title="Ctrl+Z">撤销</button>
+            <button class="btn" id="btn-redo" title="Ctrl+Shift+Z">重做</button>
+            <button class="btn" id="btn-fit">适应窗口</button>
+          </div>
+          <div class="tb-group">
+            <button class="btn" id="btn-save-local">保存本地</button>
+            <button class="btn" id="btn-load-local">读取本地</button>
+            <button class="btn" id="btn-export-json">导出 JSON</button>
+            <button class="btn" id="btn-import-json">导入 JSON</button>
+            <button class="btn" id="btn-export-png">导出 PNG</button>
+            <button class="btn" id="btn-reset">重置示例</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="demo-bar">
+        <div class="demo-left">
+          <label class="lbl">操作规程</label>
+          <select id="op-select" class="select"></select>
+          <button class="btn btn-primary" id="btn-prev">上一步</button>
+          <button class="btn btn-primary" id="btn-next">下一步</button>
+          <button class="btn" id="btn-play">自动播放</button>
+          <button class="btn" id="btn-op-reset">退出演示</button>
+          <span class="step-indicator" id="step-indicator">—</span>
+        </div>
+        <div class="demo-right">
+          <label class="switch">
+            <input type="checkbox" id="chk-flow" checked />
+            <span>流动动画</span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="chk-labels" checked />
+            <span>显示管线号</span>
+          </label>
+        </div>
+      </div>
+
+      <main class="workspace">
+        <aside class="panel panel-left">
+          <div class="panel-title">
+            图元库<span class="panel-hint">点击添加到画布</span>
+          </div>
+          <div id="palette" class="palette"></div>
+          <div class="panel-note">
+            ① 点击图元 → 添加到画布中心<br />
+            ② 从黄色连接桩拖拽 → 连出管段<br />
+            ③ 选中设备/管线 → 右侧维护位号与工艺参数<br />
+            ④ 点击阀门/泵 → 切换开关状态
+          </div>
+        </aside>
+
+        <section class="canvas-wrap">
+          <div id="graph-container"></div>
+          <div class="step-caption" id="step-caption">
+            <strong>演示未启动。</strong>
+            选择上方的操作规程，或用鼠标直接点击阀门 / 泵，观察管路流动变化。
+          </div>
+          <div class="legend">
+            <div class="legend-title">图例</div>
+            <div class="legend-row"><i class="lg lg-open"></i>阀门开（通）</div>
+            <div class="legend-row">
+              <i class="lg lg-closed"></i>阀门关（断）
+            </div>
+            <div class="legend-row"><i class="lg lg-run"></i>泵运行</div>
+            <div class="legend-row"><i class="lg lg-flow"></i>管内介质流动</div>
+            <div class="legend-row">
+              <i class="lg lg-dim"></i>非当前流程（淡化）
+            </div>
+          </div>
+          <div class="hint-badge" id="hint-badge">
+            提示：点击阀门可切换开 / 关
+          </div>
+        </section>
+
+        <aside class="panel panel-right">
+          <div class="panel-title">
+            属性面板<span class="panel-hint" id="inspector-target">未选中</span>
+          </div>
+          <div id="inspector" class="inspector">
+            <div class="empty">在画布上单击一个设备或管线</div>
+          </div>
+          <div class="panel-title mt">数据统计</div>
+          <div id="stats" class="stats"></div>
+        </aside>
+      </main>
+
+      <footer class="json-panel">
+        <div class="json-head">
+          <button class="btn btn-mini" id="btn-json-toggle">
+            展开/收起数据结构
+          </button>
+          <span class="json-hint">
+            下方即「画图 → 数据」的真实产出：X6
+            <code>graph.toJSON()</code>。仓库位号、介质、口径都在
+            <code>data</code> 字段里。
+          </span>
+          <button class="btn btn-mini" id="btn-json-refresh">刷新</button>
+        </div>
+        <pre id="json-view" class="json-view hidden"></pre>
+      </footer>
+    </div>
+
+    <input type="file" id="file-input" accept=".json" style="display: none" />
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
